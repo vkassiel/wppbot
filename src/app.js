@@ -9,7 +9,24 @@ app.then(client => start(client))
 function start(client) {
     client.onMessage(async (message) => {
 
-        await client.sendText(message.from, "Hello!")
+        const { isMedia, isGroupMsg, caption } = message
+
+        const commands = {
+            sticker: () => {
+                convert.imageToSticker(client, message)
+            }
+        }
+
+        if (!isGroupMsg && isMedia) {
+            switch (caption) {
+                case '!sticker':
+                    var runCommand = commands["sticker"]
+                    runCommand()
+                    break
+            }
+        } else {
+            await client.sendText(message.from, "Desculpe, ocorreu um erro inesperado. Tente novamente mais tarde!")
+        }
 
     })
 }
