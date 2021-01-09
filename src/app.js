@@ -14,6 +14,9 @@ function start(client) {
         const commands = {
             sticker: () => {
                 convert.imageToSticker(client, message)
+            },
+            gif: () => {
+                convert.videoToSticker(client, message)
             }
         }
 
@@ -21,6 +24,11 @@ function start(client) {
             switch (caption) {
                 case '!sticker':
                     var runCommand = commands["sticker"]
+                    runCommand()
+                    break
+
+                case '!gif':
+                    var runCommand = commands["gif"]
                     runCommand()
                     break
             }
