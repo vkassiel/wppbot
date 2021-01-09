@@ -3,10 +3,10 @@ const { decryptMedia } = require('@open-wa/wa-automate')
 class Convert {
 
     async imageToSticker(client, message) {
-        const { from, sender, mimetype } = message
+        const { from, sender, mimetype, chat } = message
 
         // Message confirming receipt of the image 
-        await client.sendText(from, `${sender.pushname}, aguarde um pouco enquanto sua figurinha é gerada.`)
+        await client.reply(chat.id, `${sender.pushname}, aguarde um pouco enquanto sua figurinha é gerada.`, message.id, false)
 
         // Decrypting message
         const media = await decryptMedia(message)
@@ -16,16 +16,13 @@ class Convert {
 
         // Re-sending to user in sticker format
         await client.sendImageAsSticker(from, `data:${mimetype};base64,${base64}`)
-
-        // Last message
-        await client.sendText(from, `${sender.pushname}, figurinha gerada com sucesso! :)`)
     }
 
     async videoToSticker(client, message) {
-        const { from, sender, mimetype } = message
+        const { from, sender, mimetype, chat } = message
 
         // Message confirming receipt of the video 
-        await client.sendText(from, `${sender.pushname}, aguarde um pouco enquanto sua figurinha é gerada.`)
+        await client.reply(chat.id, `${sender.pushname}, aguarde um pouco enquanto sua figurinha é gerada.`, message.id, false)
 
         // Decrypting message
         const media = await decryptMedia(message)
@@ -35,9 +32,6 @@ class Convert {
 
         // Re-sending to user in sticker (gif) format
         await client.sendMp4AsSticker(from, `data:${mimetype};base64,${base64}`)
-
-        // Last message
-        await client.sendText(from, `${sender.pushname}, figurinha animada gerada com sucesso! :)`)
     }
 }
 
