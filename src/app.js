@@ -2,6 +2,7 @@ const { create } = require('@open-wa/wa-automate')
 
 // Importing services
 const convert = require('./services/convert')
+const help = require('./services/help')
 
 const app = create()
 app.then(client => start(client))
@@ -9,7 +10,7 @@ app.then(client => start(client))
 function start(client) {
     client.onMessage(async (message) => {
 
-        const { isMedia, isGroupMsg, caption } = message
+        const { caption, body } = message
 
         const commands = {
             sticker: () => {
@@ -17,24 +18,29 @@ function start(client) {
             },
             gif: () => {
                 convert.videoToSticker(client, message)
+            },
+            commands: () => {
+                help.commands(client, message)
             }
         }
 
-        if (!isGroupMsg && isMedia) {
-            switch (caption) {
-                case '!sticker':
-                    var runCommand = commands["sticker"]
-                    runCommand()
-                    break
+        switch (caption) {
+            case '!sticker':
+                var runCommand = commands["sticker"]
+                runCommand()
+                break
 
-                case '!gif':
-                    var runCommand = commands["gif"]
-                    runCommand()
-                    break
-            }
-        } else {
-            await client.sendText(message.from, "Desculpe, ocorreu um erro inesperado. Tente novamente mais tarde!")
+            case '!gif':
+                var runCommand = commands["gif"]
+                runCommand()
+                break
         }
 
+        switch (body) {
+            case '!commands':
+                var runCommand = commands["commands"]
+                runCommand()
+                break
+        }
     })
 }
