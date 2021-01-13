@@ -8,7 +8,7 @@ class Help {
 
         // Commands list
         const commands =
-`Lista de comandos disponíveis:
+            `Lista de comandos disponíveis:
 
 *!sticker*
 Cria um sticker a partir de uma imagem.
@@ -29,24 +29,37 @@ Outros comandos:
     }
 
     async everyone(client, message) {
-        const { chat } = message
+        const { chat, author, sender } = message
 
-        // Capturing the participants list
-        const participants = chat.groupMetadata.participants
+        const contacts = []
 
-        for (let i = 0; i < participants.length; i++) {
-            // Defining the id
-            var ParticipantId = participants[i].id
+        const adminList = await client.getGroupAdmins(chat.id)
+        const isAdmin = adminList.includes(author)
 
-            // Getting details based on id
-            var ParticipantDetails = await client.getContact(ParticipantId)
+        if (isAdmin) {
+            // Capturing the participants list
+            const participants = chat.groupMetadata.participants
 
-            // Getting the number (unique user id) before '@'
-            var ParticipantNumber = ParticipantDetails.id.split('@')
+            for (let i = 0; i < participants.length; i++) {
+                // Defining the id
+                var ParticipantId = participants[i].id
+
+                // Getting details based on id
+                var ParticipantDetails = await client.getContact(ParticipantId)
+
+                // Getting the number (unique user id) before '@'
+                var ParticipantNumber = ParticipantDetails.id.split('@')
+
+                contacts.push(`@${ParticipantNumber[0]}`)
+            }
 
             // Flooding
-            await client.sendTextWithMentions(chat.id, `@${ParticipantNumber[0]}`)
+            await client.sendTextWithMentions(chat.id, `${contacts}`)
+            
+        } else {
+            await client.reply(chat.id, `${sender.pushname}, somente administradores do grupo podem usar esse comando!`, message.id, false)
         }
+
     }
 }
 
